@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" class="login-form">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <div class="title-container">
         <h3 class="title">账号登录</h3>
       </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-
+import { getToken, setToken } from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
@@ -37,6 +37,29 @@ export default {
       loginForm: {
         username: 'admin',
         password: 'admin'
+      },
+      // 验证规则
+      loginRules: {
+        // 验证用户名是否合法
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            min: 3,
+            max: 16,
+            message: '长度在 3 到 16 个字符',
+            trigger: 'blur'
+          }
+        ],
+        // 验证密码是否合法
+        password: [
+          { required: true, message: '请输入登录密码', trigger: 'blur' },
+          {
+            min: 3,
+            max: 16,
+            message: '长度在 6 到 16 个字符',
+            trigger: 'blur'
+          }
+        ]
       },
       passwordType: 'password',
       loading: false
@@ -59,15 +82,31 @@ export default {
         if (valid) {
           // alert('submit!')
           this.loading = true
+          this.$axios.post('/dev-api/vue-test/user/login', {
+            username: this.loginForm.username,
+            password: this.loginForm.password
+          }).then(res => {
+            setToken(res.data.data.token)
+            this.$store.commit('user/SET_TOKEN', getToken())
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+          }).catch((error) => {
+            console.log(error)
+            this.$router.push({ path: '/error', query: { errorMsg: error }})
+            this.loading = false
+          })
+          /*  this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             // console.log(this.redirect)
-            this.$router.push({ path: this.redirect || '/index' })
+            this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false
-          })
+            // this.$router.push({ path: '/error' })
+          }) */
         } else {
-          console.log('error submit!!')
+          console.log('请填写正确的用户名或密码')
+          // this.$router.push({ path: '/error', query: { errorMsg: 'error message' }})
           return false
         }
       })

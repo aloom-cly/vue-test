@@ -1,23 +1,16 @@
 <template>
-  <div class="home-text">name: {{ name }}{{ token }}</div>
+  <div class="main-container">
+    <div class="main-section">首页</div>
+  </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
-  name: 'HomeIndex',
-  /* data() {
-    return {
-      name: 'name',
-      token: 'token'
-    }
-  } */
-  computed: {
-    ...mapGetters([
-      'name', 'token'
-    ])
-  }
+  name: 'Home'
 }
 </script>
-
+<style scoped lang="scss">
+  .main-section{
+    padding: 20px 16px;
+  }
+</style>

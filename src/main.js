@@ -17,6 +17,8 @@ import '@/icons' // icon
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
+import axios from 'axios'
+import '@/utils/request'
 import { getToken } from '@/utils/auth' // get token from cookie
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -25,7 +27,7 @@ router.beforeEach(async(to, from, next) => {
   if (hasToken) {
     // 有token
     if (to.path === '/login') {
-      next({ path: '/index' })
+      next({ path: '/' })
       NProgress.done()
     } else {
       var hasGetUserInfo = store.getters.name
@@ -47,7 +49,7 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     // 没有token
-    if (to.path === '/login') {
+    if (to.path === '/login' || to.path === '/error') {
       next()
     } else {
       next(`/login?redirect=${to.path}`)
@@ -78,7 +80,7 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
-
+Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 
 new Vue({
